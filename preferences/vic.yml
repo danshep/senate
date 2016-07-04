@@ -70,8 +70,24 @@
   - "Family First Party"
   - "Mature Australia"
   - "Australian Country Party"
-"Nick Xenophon Team": []
-"Australian Motoring Enthusiast Party": []
+"Nick Xenophon Team":
+  # based on 2013 South Australian HTV split ticket
+  - split:
+    - "Liberal/The Nationals"
+    - "Australian Labor Party"
+    - "The Greens"
+  - "DLP Democratic Labour"
+"Australian Motoring Enthusiast Party":
+  # based on HTV card giving a list of unordered parties
+  - split:
+    - "MFP"
+    - "Shooters, Fishers and Farmers"
+    - "Nick Xenophon Team"
+    - "Australian Country Party"
+    - "Liberal Democrats"
+    - "Renewable Energy Party"
+    - "Jacqui Lambie Network"
+    - "Drug Law Reform"
 "Marriage Equality":
   - "The Greens"
   - "Australian Sex Party"

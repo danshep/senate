@@ -12,6 +12,7 @@ class TransferableVote
     @votes * @remaining
   end
   def preference(other_vote)
+    puts "      Transferring %d from %s to %s" % [other_vote.votes, other_vote.party, self.party]
     @other_votes << other_vote
   end
   def total
@@ -37,15 +38,33 @@ class TransferableVote
   end
   def allocate_preferences(other_votes)
     @preferences.each do |preference|
-      if other_vote = other_votes.detect {|x| x.party == preference}
-        puts "      Transferring %d from %s to %s" % [self.votes, self.party, other_vote.party]
-        other_vote.preference(self)
-        return
+      if preference.is_a?(String)
+        if other_vote = other_votes.detect {|x| x.party == preference}
+          other_vote.preference(self)
+          return
+        end
+      elsif preference.is_a?(Hash) && preference.size == 1 && preference['split']
+        split_votes = other_votes.select {|vote| preference['split'].include?(vote.party) }
+        unless split_votes.empty?
+          split = votes / split_votes.size
+          split_votes.each do |other_vote|
+            other_vote.preference(TransferableVote.new(self.party, split, @preferences))
+          end
+          return
+        end
+      else
+        raise "Invalid preference #{preference.inspect}"
       end
     end
-    puts "      Preferences of %s are exhausted, %d wasted" % [self.party, self.votes]
+    if @preferences.empty?
+      puts "      No Preferences %s are known, %d ignored" % [self.party, self.votes]
+    else
+      puts "      Preferences of %s are exhausted, %d wasted" % [self.party, self.votes]
+    end
   end
 end
+
+
 
 class Senate
   attr_reader :remaining_seats
@@ -81,11 +100,11 @@ class Senate
 end
 
 preferences = File.open('preferences/vic.yml') {|f| YAML.load(f) }
-preferences.each do |party, prefs|
-  prefs.each do |pref|
-    raise "Invalid preference #{pref.inspect}" unless preferences[pref]
-  end
-end
+# preferences.each do |party, prefs|
+#   prefs.each do |pref|
+#     raise "Invalid preference #{pref.inspect}" unless preferences[pref]
+#   end
+# end
 
 votes = []
 CSV.open('votes/vic.csv') do |csv|
